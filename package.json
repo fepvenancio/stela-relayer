@@ -1,0 +1,17 @@
+{
+  "name": "stela-relayer",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "build": "tsc",
+    "start:built": "node dist/index.js"
+  },
+  "dependencies": {
+    "starknet": "^9.2.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0"
+  }
+}
