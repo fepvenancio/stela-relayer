@@ -71,7 +71,11 @@ const POLL_INTERVAL_MS = parseInt(process.env.POLL_INTERVAL_MS || '120000', 10)
 // ---------------------------------------------------------------------------
 
 const provider = new RpcProvider({ nodeUrl: RPC_URL })
-const account = new Account(provider, RELAYER_ADDRESS, RELAYER_PRIVATE_KEY)
+const account = new Account({
+  provider,
+  address: RELAYER_ADDRESS,
+  signer: RELAYER_PRIVATE_KEY,
+})
 
 // ---------------------------------------------------------------------------
 // Constants

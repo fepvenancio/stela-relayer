@@ -14,9 +14,9 @@ Every settlement charges a **25 BPS (0.25%) protocol fee** on each debt asset:
 
 | Recipient | Share | Description |
 |-----------|-------|-------------|
-| Fee Vault | 15 BPS | Protocol treasury |
-| **Relayer** | **5 BPS** | Settlement reward (paid to `tx.origin`) |
-| Genesis NFT | 5 BPS | Distributed to genesis NFT holders |
+| **Relayer** | **5 BPS** | Settlement reward (paid to `msg.sender`) |
+| Genesis Vault | 15 BPS | Distributed to Genesis NFT holders |
+| Treasury | 5 BPS | Protocol treasury |
 
 The relayer fee is paid in the debt asset token(s), automatically by the contract. You earn 5 BPS of every debt asset on every settlement you execute.
 
