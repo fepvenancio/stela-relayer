@@ -90,13 +90,15 @@ const ASSET_TYPE_ENUM: Record<string, number> = {
 
 const NONCES_SELECTOR = hash.getSelectorFromName('nonces')
 
+const U128_MASK = (1n << 128n) - 1n
+
 // ---------------------------------------------------------------------------
 // Utility functions
 // ---------------------------------------------------------------------------
 
 function toU256(value: string): [string, string] {
   const bn = BigInt(value)
-  const low = bn & ((1n << 128n) - 1n)
+  const low = bn & U128_MASK
   const high = bn >> 128n
   return ['0x' + low.toString(16), '0x' + high.toString(16)]
 }
@@ -177,21 +179,31 @@ async function getOnChainNonce(address: string): Promise<bigint> {
 // ---------------------------------------------------------------------------
 
 async function settleOrder(order: OrderRow, detail: OrderDetail): Promise<void> {
-  const orderData: OrderData = JSON.parse(detail.order.order_data)
+  let orderData: OrderData
+  try {
+    orderData = JSON.parse(detail.order.order_data)
+  } catch (err) {
+    console.error(`Order ${order.id}: failed to parse order_data, skipping:`, err)
+    return
+  }
+
   const offer = detail.offers[0]
   if (!offer) {
     console.warn(`Order ${order.id}: no offers found, skipping`)
     return
   }
 
-  // Validate nonces
-  const borrowerNonce = await getOnChainNonce(orderData.borrower)
+  // Validate nonces (parallel)
+  const [borrowerNonce, lenderNonce] = await Promise.all([
+    getOnChainNonce(orderData.borrower),
+    getOnChainNonce(offer.lender),
+  ])
+
   if (borrowerNonce >= 0n && BigInt(orderData.nonce) !== borrowerNonce) {
     console.warn(`Order ${order.id}: borrower nonce mismatch (expected ${borrowerNonce}, got ${orderData.nonce}), skipping`)
     return
   }
 
-  const lenderNonce = await getOnChainNonce(offer.lender)
   if (lenderNonce >= 0n && BigInt(offer.nonce) !== lenderNonce) {
     console.warn(`Order ${order.id}: lender nonce mismatch (expected ${lenderNonce}, got ${offer.nonce}), skipping`)
     return
@@ -260,6 +272,7 @@ async function settleOrder(order: OrderRow, detail: OrderDetail): Promise<void> 
 // ---------------------------------------------------------------------------
 
 let running = true
+let isPollInProgress = false
 
 async function poll(): Promise<void> {
   try {
@@ -301,7 +314,13 @@ async function main(): Promise<void> {
 
   // Scheduled polling
   const interval = setInterval(async () => {
-    if (running) await poll()
+    if (!running || isPollInProgress) return
+    isPollInProgress = true
+    try {
+      await poll()
+    } finally {
+      isPollInProgress = false
+    }
   }, POLL_INTERVAL_MS)
 
   // Graceful shutdown
