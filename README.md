@@ -10,12 +10,14 @@ A **relayer** watches for matched orders (an order paired with a signed lender o
 
 ### Fee Economics
 
-Every settlement charges a **20 BPS (0.20%) protocol fee** on each debt asset:
+Every settlement charges a **protocol fee** on each debt asset:
+- **Lending (duration > 0):** 20 BPS (0.20%) -- 5 relayer + 15 treasury
+- **Swaps (duration = 0):** 10 BPS (0.10%) -- 5 relayer + 5 treasury
 
-| Recipient | Share | Description |
-|-----------|-------|-------------|
-| **Relayer** | **5 BPS** | Settlement reward (paid to `msg.sender`) |
-| Treasury | 15 BPS | Protocol revenue |
+| Recipient | Lending | Swap | Description |
+|-----------|---------|------|-------------|
+| **Relayer** | **5 BPS** | **5 BPS** | Settlement reward (paid to `msg.sender`) |
+| Treasury | 15 BPS | 5 BPS | Protocol revenue |
 
 Genesis NFT holders receive on-chain fee discounts (up to 50% off the treasury portion).
 
