@@ -10,14 +10,14 @@ A **relayer** watches for matched orders (an order paired with a signed lender o
 
 ### Fee Economics
 
-Every settlement charges a **25 BPS (0.25%) protocol fee** on each debt asset:
+Every settlement charges a **20 BPS (0.20%) protocol fee** on each debt asset:
 
 | Recipient | Share | Description |
 |-----------|-------|-------------|
 | **Relayer** | **5 BPS** | Settlement reward (paid to `msg.sender`) |
-| Genesis Vault | 20 BPS | Distributed to Genesis NFT holders |
+| Treasury | 15 BPS | Protocol revenue |
 
-Treasury is set to the FeeVault — no individual receives protocol revenue. 100% of non-relayer fees go to Genesis NFT holders.
+Genesis NFT holders receive on-chain fee discounts (up to 50% off the treasury portion).
 
 The relayer fee is paid in the debt asset token(s), automatically by the contract. You earn 5 BPS of every debt asset on every settlement you execute.
 
@@ -29,7 +29,7 @@ The relayer fee is paid in the debt asset token(s), automatically by the contrac
 4. Debt assets transfer from lender to borrower (minus fees)
 5. Collateral assets lock in the contract
 6. Interest assets are noted for repayment
-7. ERC1155 shares are minted to the lender (or committed to privacy pool)
+7. ERC1155 shares are minted to the lender
 8. Relayer receives 5 BPS fee automatically
 
 ## Setup

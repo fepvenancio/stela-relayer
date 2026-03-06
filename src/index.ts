@@ -38,7 +38,6 @@ interface OfferRow {
   bps: string
   nonce: string
   lender_signature: string
-  lender_commitment: string
 }
 
 interface OrderDetail {
@@ -236,7 +235,7 @@ async function settleOrder(order: OrderRow, detail: OrderDetail): Promise<void> 
   const [borrowerR, borrowerS] = parseSig(detail.order.borrower_signature)
   calldata.push('2', borrowerR, borrowerS)
 
-  // LendOffer: 6 fields
+  // LendOffer: 5 fields
   const [bpsLow, bpsHigh] = toU256(offer.bps)
   calldata.push(
     orderData.orderHash,
@@ -244,7 +243,6 @@ async function settleOrder(order: OrderRow, detail: OrderDetail): Promise<void> 
     bpsLow,
     bpsHigh,
     offer.nonce,
-    offer.lender_commitment || '0',
   )
 
   // Lender signature [len, r, s]
